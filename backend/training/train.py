@@ -7,19 +7,17 @@ from tqdm import tqdm
 import segmentation_models_pytorch as smp
 import numpy as np
 
-# =========================================================
-# CONFIG
-# =========================================================
+
 DATA_ROOT = "data/raw"
 SAVE_DIR = "models/segmentation_multiclass/weights"
 
 IMAGE_SIZE = 256
-BATCH_SIZE = 4  # Reduced from 8
+BATCH_SIZE = 4  
 MAX_EPOCHS = 120
 PATIENCE = 10
 LR = 1e-4
 
-RESUME = True   # set False for fresh training
+RESUME = True  
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 os.makedirs(SAVE_DIR, exist_ok=True)
@@ -156,7 +154,7 @@ if RESUME and os.path.exists(LAST_CKPT):
     scheduler.load_state_dict(ckpt["scheduler_state"])
     start_epoch = ckpt["epoch"] + 1
     best_mean_dice = ckpt["best_mean_dice"]
-    patience_counter = ckpt["patience_counter"]
+    patience_counter = 0  # Reset patience counter
 
     print(f"🔄 Resumed from epoch {start_epoch}")
 
@@ -185,22 +183,27 @@ for epoch in range(start_epoch, MAX_EPOCHS + 1):
 
     # ---------------- VALIDATION ----------------
     model.eval()
-    dice_sum = {1: 0.0, 2: 0.0, 3: 0.0}
-    count = 0
+    all_preds = []
+    all_masks = []
 
     with torch.no_grad():
         for imgs, masks in val_loader:
             imgs = imgs.to(DEVICE)
-            masks = masks.to(DEVICE)
-
             preds = model(imgs)
-            dice = per_class_dice(preds, masks)
+            all_preds.append(torch.argmax(preds, dim=1).cpu())
+            all_masks.append(masks.cpu())
 
-            for k in dice_sum:
-                dice_sum[k] += dice[k].item()
-            count += 1
+    all_preds = torch.cat(all_preds)
+    all_masks = torch.cat(all_masks)
 
-    dice_avg = {k: v / count for k, v in dice_sum.items()}
+    dice_avg = {}
+    for cls in range(1, 4):
+        p = (all_preds == cls).float()
+        t = (all_masks == cls).float()
+        inter = (p * t).sum()
+        union = p.sum() + t.sum()
+        dice_avg[cls] = ((2 * inter + 1e-6) / (union + 1e-6)).item()
+
     mean_dice = sum(dice_avg.values()) / 3
 
     print("\n------------------------------------")

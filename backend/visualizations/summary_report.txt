@@ -1,0 +1,32 @@
+
+LUNG CANCER SEGMENTATION - PERFORMANCE SUMMARY
+==============================================
+
+DATASET INFORMATION:
+- Training Samples: 4681
+- Test Samples: 1140
+
+TRAINING SET PERFORMANCE:
+- ADC Dice: 0.9750
+- LCC Dice: 0.9638
+- SCC Dice: 0.9692
+- Mean Dice: 0.9694
+
+TEST SET PERFORMANCE:
+- ADC Dice: 0.9048
+- LCC Dice: 0.9101
+- SCC Dice: 0.9145
+- Mean Dice: 0.9098
+
+GENERALIZATION GAP:
+- ADC: 0.0703
+- LCC: 0.0538
+- SCC: 0.0548
+
+CONFUSION MATRIX INTERPRETATION:
+The confusion matrix shows how well the model distinguishes between classes.
+- Diagonal values: Correct predictions
+- Off-diagonal values: Misclassifications
+- Higher diagonal = Better performance
+
+All visualizations saved in 'visualizations/' directory

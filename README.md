@@ -40,8 +40,9 @@ backend/data/raw/
 ## Results
 
 - **Model**: U-Net++ with EfficientNet-B4
-- **Performance**: 80-90% Dice Score
+- **Performance**: 87.11% Mean Dice Score
 - **Classes**: Background, ADC, LCC, SCC
+- **Per-Class**: ADC (86.02%), LCC (87.95%), SCC (87.35%)
 
 ## Requirements
 
@@ -53,3 +54,21 @@ backend/data/raw/
 ## License
 
 Research Use Only
+
+
+(venv) I:\Final Year Projects\lung-cancer-segmentation\backend>python training/evaluate.py
+Using device: cuda
+Test samples: 1140
+
+
+
+================ DICE RESULTS ================
+ADC Dice: 0.8602
+LCC Dice: 0.8795
+SCC Dice: 0.8735
+---------------------------------------------
+Mean Dice (ADC + LCC + SCC): 0.8711
+=============================================
+
+Note: Training validation shows ~93% due to batch-level averaging.
+Final test evaluation (above) is the accurate metric.

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./venv/Scripts/pip show streamlit)",
+      "Bash(pip show streamlit)",
+      "Bash(python -:*)"
+    ]
+  }
+}
